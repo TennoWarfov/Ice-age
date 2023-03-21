@@ -7,7 +7,12 @@ namespace BomjyEnternainment.IceAge.Animals
     public class RhinoStateRoaming : AnimalStateRoaming
     {
         [SerializeField] private Rhino rhino;
-        [SerializeField] private float roamingRadius;
+        [SerializeField] private float roamingMinRadius;
+        [SerializeField] private float roamingMaxRadius;
+
+        [SerializeField] private float roamingMinTime;
+        [SerializeField] private float roamingMaxTime;
+
         [SerializeField] private float roamingSpeed;
         [SerializeField] private float rotationSpeed;
         [SerializeField] private float targetMovingSpeed;
@@ -15,9 +20,9 @@ namespace BomjyEnternainment.IceAge.Animals
         private Coroutine coroutine;
         public override void Enter()
         {
-            var x = Random.Range(-roamingRadius, roamingRadius);
+            var x = GetRandomNumInRadius();
             var y = 0;
-            var z = Random.Range(-roamingRadius, roamingRadius);
+            var z = GetRandomNumInRadius();
 
             var roamingPoint = rhino.Tr.position + new Vector3(x, y, z);
 
@@ -28,7 +33,19 @@ namespace BomjyEnternainment.IceAge.Animals
 
             rhino.GoToTargetPointInput.enabled = true;
 
-            coroutine = StartCoroutine(EndRoamAfterSeconds(3));
+            float roamingTime = Random.Range(roamingMinTime, roamingMaxTime);
+            coroutine = StartCoroutine(EndRoamAfterSeconds(roamingTime));
+        }
+
+        private float GetRandomNumInRadius()
+        {
+            var a = Random.Range(roamingMinRadius, roamingMaxRadius);
+            var mirror = Random.Range(0, 2);
+
+            if (mirror == 1)
+                a = -a;
+
+            return a;
         }
 
         public override void Exit()

@@ -23,7 +23,7 @@ namespace BomjyEnternainment.IceAge.Animals
             rhino.Controller.RotationSpeed = 0;
 
             rhino.Animator.SetBool("Eating", true);
-            rhino.Controller.TurningRig.weight = 0;
+            rhino.Controller.TurningRig.SetWeight(0f, 1f);
         }
 
         public override void Exit()
@@ -33,7 +33,7 @@ namespace BomjyEnternainment.IceAge.Animals
             rhino.Controller.RotationSpeed = rotationSpeed;
 
             rhino.Animator.SetBool("Eating", false);
-            rhino.Controller.TurningRig.weight = 1;
+            rhino.Controller.TurningRig.SetWeight(1f, 1f);
         }
 
         public override void Tick()

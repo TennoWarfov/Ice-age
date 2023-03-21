@@ -12,7 +12,7 @@ namespace BomjyEnternainment.IceAge.Animals
         {
             rhino.Controller.enabled = false;
             rhino.Rb.isKinematic = true;
-            rhino.Controller.TurningRig.weight = 0;
+            rhino.Controller.TurningRig.SetWeight(0, 1f);
             rhino.Animator.SetTrigger("Death");
         }
     }

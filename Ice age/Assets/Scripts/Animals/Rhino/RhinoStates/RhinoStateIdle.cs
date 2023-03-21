@@ -20,7 +20,7 @@ namespace BomjyEnternainment.IceAge.Animals
         {
             var idleTime = Random.Range(minIdleTime, maxIdleTime);
             coroutine = StartCoroutine(StopEatingAfterSeconds(idleTime));
-            rhino.Controller.TurningRig.weight = 0;
+            rhino.Controller.TurningRig.SetWeight(0f, 1f);
 
             rotationSpeed = rhino.Controller.RotationSpeed;
             rhino.Controller.RotationSpeed = 0;
@@ -29,7 +29,7 @@ namespace BomjyEnternainment.IceAge.Animals
         public override void Exit()
         {
             StopCoroutine(coroutine);
-            rhino.Controller.TurningRig.weight = 1;
+            rhino.Controller.TurningRig.SetWeight(1f, 1f);
             rhino.Controller.RotationSpeed = rotationSpeed;
         }
 
@@ -43,6 +43,9 @@ namespace BomjyEnternainment.IceAge.Animals
             yield return new WaitForSeconds(seconds);
 
             var num = Random.Range(1, 101);
+
+            Debug.Log(num + " / " + roamChance);
+
             if (num < roamChance)
                 rhino.Roam();
             else

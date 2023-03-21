@@ -19,13 +19,15 @@ namespace BomjyEnternainment.IceAge.Animals
         [Header("Animations")]
         [SerializeField] private Transform turningRigTarget;
         [SerializeField] private float radius;
-        public Rig TurningRig => turningRig;
-        [SerializeField] private Rig turningRig;
+        public RigWeightController TurningRig => turningRig;
+        [SerializeField] private RigWeightController turningRig;
         public float TargetMovingSpeed { get { return targetMovingSpeed; } set { targetMovingSpeed = value; } }
         [SerializeField] private float targetMovingSpeed;
 
         [SerializeField] private float zConstraint;
         [SerializeField] private float xConstraint;
+
+        public bool IsGrounded { get; set; }
 
         private float initialY;
 
@@ -38,7 +40,7 @@ namespace BomjyEnternainment.IceAge.Animals
 
         private void Awake()
         {
-            initialY = turningRigTarget.position.y;
+            initialY = animal.Tr.InverseTransformPoint(turningRigTarget.position).y;
 
             Target = new GameObject().transform;
             Target.name = "RhinoeEthalonTarget";
@@ -51,8 +53,11 @@ namespace BomjyEnternainment.IceAge.Animals
         {
             MoveRealTarget();
             PoseTarget();
-            Move(speed, Input.y);
-            Rotations();
+            if (IsGrounded)
+            {
+                Move(speed, Input.y);
+                Rotations();
+            }
 
             animal.Animator.SetFloat(movingSpeedHash, animal.Rb.velocity.magnitude);
         }
@@ -73,27 +78,38 @@ namespace BomjyEnternainment.IceAge.Animals
             pos.x = Mathf.Clamp(pos.x, -xConstraint, xConstraint);
             pos.y = initialY;
 
-            if (pos.z < zConstraint)
-            {
-                if (pos.x > 0)
-                    pos.x = xConstraint;
-                else
-                    pos.x = -xConstraint;
-            }
 
-            pos.z = Mathf.Clamp(pos.z, zConstraint, 100f);
+            if (pos.z < zConstraint) {
+                var x = pos.x / radius;
+                pos.z = Mathf.Cos(x) * radius;
+            }
 
             turningRigTarget.position = animal.Tr.TransformPoint(pos);
         }
 
         private void OnDrawGizmos()
         {
-            DrawTargetPoint();
+            //DrawTargetPoint();
         }
 
         private void DrawTargetPoint()
         {
-            Gizmos.DrawSphere(turningRigTarget.position, 0.1f);
+            Gizmos.color = Color.black;
+            //Gizmos.DrawSphere(turningRigTarget.position, 0.1f);
+
+            Vector3[] points = new Vector3[50];
+
+            var x = -1f;
+            for(int i = 0; i < points.Length; i++)
+            {
+                points[i] = new Vector3(x, 0, Mathf.Cos(x));
+                x += 1f / 25f;
+            }
+
+            for(int i = 0; i < points.Length -1; i++)
+            {
+                Gizmos.DrawLine(points[i], points[i + 1]);
+            }
         }
 
         public Vector3 DirectionToRealTarget { get { return realTarget.position - animal.Tr.position; } }
